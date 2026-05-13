@@ -1,0 +1,8 @@
+{
+    "display_name": "向量记忆库",
+    "plugin_id": "vector_memory",
+    "version": "1.1.0",
+    "author": "KiraAI Team",
+    "description": "基于向量相似度的长期记忆检索系统，支持语义搜索、重要性评分、自动注入和记忆反思",
+    "repo": "https://github.com/xgrbhc/kira-plugin-vector_memory.git"
+}

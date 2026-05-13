@@ -1,0 +1,116 @@
+{
+    "enabled": {
+        "type": "switch",
+        "default": true,
+        "hint": "是否启用向量记忆功能"
+    },
+
+    "embedding_source": {
+        "type": "enum",
+        "options": ["system_default", "custom_model"],
+        "default": "system_default",
+        "hint": "Embedding模型 来源：系统默认 / 系统提供商模型选择"
+    },
+    "embedding_model_uuid": {
+        "type": "model_select",
+        "model_type": "embedding",
+        "default": "",
+        "hint": "当选择 系统提供商模型时，在这里选择 embedding 模型"
+    },
+
+    "max_memory_count": {
+        "type": "integer",
+        "default": 10000,
+        "hint": "最大记忆条目数"
+    },
+    "auto_record": {
+        "type": "switch",
+        "default": true,
+        "hint": "是否自动记录对话"
+    },
+    "min_text_length": {
+        "type": "integer",
+        "default": 10,
+        "hint": "最小记录文本长度"
+    },
+    "search_top_k": {
+        "type": "integer",
+        "default": 5,
+        "hint": "默认搜索返回条目数"
+    },
+
+    "importance_mode": {
+        "type": "enum",
+        "options": ["rule", "llm", "hybrid"],
+        "default": "rule",
+        "hint": "重要性评分模式：rule=规则, llm=模型, hybrid=混合"
+    },
+    "importance_llm_model": {
+        "type": "string",
+        "default": null,
+        "hint": "用于评分的 LLM 模型（留空使用 default_fast_llm）"
+    },
+    "cleanup_time_weight": {
+        "type": "float",
+        "default": 0.3,
+        "hint": "清理时时间权重（0-1）"
+    },
+    "cleanup_importance_weight": {
+        "type": "float",
+        "default": 0.7,
+        "hint": "清理时重要性权重（0-1）"
+    },
+
+    "auto_injection_enabled": {
+        "type": "switch",
+        "default": true,
+        "hint": "是否启用自动上下文注入"
+    },
+    "injection_threshold": {
+        "type": "float",
+        "default": 0.75,
+        "hint": "注入相似度阈值（0-1）"
+    },
+    "injection_top_k": {
+        "type": "integer",
+        "default": 2,
+        "hint": "最大注入记忆数"
+    },
+    "injection_cooldown": {
+        "type": "integer",
+        "default": 60,
+        "hint": "同会话注入冷却时间（秒）"
+    },
+
+    "reflection_enabled": {
+        "type": "switch",
+        "default": true,
+        "hint": "是否启用每日记忆反思"
+    },
+    "reflection_hour": {
+        "type": "integer",
+        "default": 3,
+        "hint": "每日反思执行时间（小时，0-23）"
+    },
+    "reflection_delete_raw": {
+        "type": "switch",
+        "default": false,
+        "hint": "反思后是否删除原始碎片记忆"
+    },
+    "reflection_min_memories": {
+        "type": "integer",
+        "default": 5,
+        "hint": "触发反思的最小记忆数"
+    },
+
+    "smart_filter_enabled": {
+        "type": "switch",
+        "default": true,
+        "hint": "是否启用智能消息过滤"
+    },
+    "filter_min_info_density": {
+        "type": "float",
+        "default": 0.3,
+        "hint": "最小信息密度阈值"
+    }
+}

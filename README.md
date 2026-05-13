@@ -1,6 +1,6 @@
 # vector_memory 向量记忆库插件
 
-一个 KiraAI 的简易长期记忆插件。只使用主项目配置好的云端 Embedding，使用 ChromaDB 做本地持久化向量存储。
+一个基于 KiraAI 的简易长期记忆插件。只使用主项目配置好的云端 Embedding，使用 ChromaDB 做本地持久化向量存储。
 
 ## 它做什么
 

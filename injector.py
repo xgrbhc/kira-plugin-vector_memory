@@ -6,7 +6,7 @@
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Any, Callable, Dict, List, Optional
 
 from core.logging_manager import get_logger
 
@@ -38,6 +38,8 @@ class ContextInjector:
         threshold: float = 0.75,
         top_k: int = 2,
         cooldown: int = 60,
+        rerank_fn: Optional[Callable[[List[Dict[str, Any]]], List[Dict[str, Any]]]] = None,
+        rerank_enabled: bool = True,
     ):
         """
         初始化注入器
@@ -54,6 +56,8 @@ class ContextInjector:
         self.threshold = threshold
         self.top_k = top_k
         self.cooldown = cooldown
+        self.rerank_fn = rerank_fn
+        self.rerank_enabled = rerank_enabled
 
         # 冷却记录 {session_id: last_injection_time}
         self._cooldown_map: Dict[str, float] = {}
@@ -99,7 +103,10 @@ class ContextInjector:
             # 按相似度过滤
             relevant_memories = [
                 r for r in results if r.get("similarity", 0) >= self.threshold
-            ][: self.top_k]
+            ]
+            if self.rerank_enabled and self.rerank_fn:
+                relevant_memories = self.rerank_fn(relevant_memories)
+            relevant_memories = relevant_memories[: self.top_k]
 
             if not relevant_memories:
                 return InjectionResult(

@@ -1,8 +1,20 @@
 {
-    "display_name": "向量记忆库",
-    "plugin_id": "vector_memory",
-    "version": "1.1.0",
-    "author": "KiraAI Team",
-    "description": "基于向量相似度的长期记忆检索系统，支持语义搜索、重要性评分、自动注入和记忆反思",
-    "repo": "https://github.com/xgrbhc/kira-plugin-vector_memory.git"
+  "display_name": "向量记忆库",
+  "plugin_id": "vector_memory",
+  "version": "2.0.0",
+  "author": "KiraAI Team",
+  "description": "基于 ChromaDB 和主项目 Embedding 的长期向量记忆插件，支持作用域隔离、语义搜索、自动注入、记忆反思和维护迁移工具。",
+  "repo": "https://github.com/xgrbhc/kira-plugin-vector_memory.git",
+  "core_version": ">=2.19.0,<3.0.0",
+  "tags": ["memory", "vector", "chroma"],
+  "locales": {
+    "zh": {
+      "display_name": "向量记忆库",
+      "description": "基于 ChromaDB 和主项目 Embedding 的长期向量记忆插件，支持作用域隔离、语义搜索、自动注入、记忆反思和维护迁移工具。"
+    },
+    "en": {
+      "display_name": "Vector Memory",
+      "description": "A scoped long-term vector memory plugin powered by ChromaDB and KiraAI embedding models."
+    }
+  }
 }

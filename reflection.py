@@ -276,6 +276,10 @@ class ReflectionManager:
             "user_nickname": "记忆摘要",
             "platform": "system",
             "adapter": "reflection",
+            "scope": "session",
+            "owner_user_id": "",
+            "owner_session_id": session_id,
+            "owner_adapter": "reflection",
         }
 
         summary_id = await self.vector_store.add(

@@ -1,116 +1,181 @@
 {
-    "enabled": {
-        "type": "switch",
-        "default": true,
-        "hint": "是否启用向量记忆功能"
-    },
-
-    "embedding_source": {
-        "type": "enum",
-        "options": ["system_default", "custom_model"],
-        "default": "system_default",
-        "hint": "Embedding模型 来源：系统默认 / 系统提供商模型选择"
-    },
-    "embedding_model_uuid": {
-        "type": "model_select",
-        "model_type": "embedding",
-        "default": "",
-        "hint": "当选择 系统提供商模型时，在这里选择 embedding 模型"
-    },
-
-    "max_memory_count": {
-        "type": "integer",
-        "default": 10000,
-        "hint": "最大记忆条目数"
-    },
-    "auto_record": {
-        "type": "switch",
-        "default": true,
-        "hint": "是否自动记录对话"
-    },
-    "min_text_length": {
-        "type": "integer",
-        "default": 10,
-        "hint": "最小记录文本长度"
-    },
-    "search_top_k": {
-        "type": "integer",
-        "default": 5,
-        "hint": "默认搜索返回条目数"
-    },
-
-    "importance_mode": {
-        "type": "enum",
-        "options": ["rule", "llm", "hybrid"],
-        "default": "rule",
-        "hint": "重要性评分模式：rule=规则, llm=模型, hybrid=混合"
-    },
-    "importance_llm_model": {
-        "type": "string",
-        "default": null,
-        "hint": "用于评分的 LLM 模型（留空使用 default_fast_llm）"
-    },
-    "cleanup_time_weight": {
-        "type": "float",
-        "default": 0.3,
-        "hint": "清理时时间权重（0-1）"
-    },
-    "cleanup_importance_weight": {
-        "type": "float",
-        "default": 0.7,
-        "hint": "清理时重要性权重（0-1）"
-    },
-
-    "auto_injection_enabled": {
-        "type": "switch",
-        "default": true,
-        "hint": "是否启用自动上下文注入"
-    },
-    "injection_threshold": {
-        "type": "float",
-        "default": 0.75,
-        "hint": "注入相似度阈值（0-1）"
-    },
-    "injection_top_k": {
-        "type": "integer",
-        "default": 2,
-        "hint": "最大注入记忆数"
-    },
-    "injection_cooldown": {
-        "type": "integer",
-        "default": 60,
-        "hint": "同会话注入冷却时间（秒）"
-    },
-
-    "reflection_enabled": {
-        "type": "switch",
-        "default": true,
-        "hint": "是否启用每日记忆反思"
-    },
-    "reflection_hour": {
-        "type": "integer",
-        "default": 3,
-        "hint": "每日反思执行时间（小时，0-23）"
-    },
-    "reflection_delete_raw": {
-        "type": "switch",
-        "default": false,
-        "hint": "反思后是否删除原始碎片记忆"
-    },
-    "reflection_min_memories": {
-        "type": "integer",
-        "default": 5,
-        "hint": "触发反思的最小记忆数"
-    },
-
-    "smart_filter_enabled": {
-        "type": "switch",
-        "default": true,
-        "hint": "是否启用智能消息过滤"
-    },
-    "filter_min_info_density": {
-        "type": "float",
-        "default": 0.3,
-        "hint": "最小信息密度阈值"
-    }
+  "enabled": {
+    "name": "启用向量记忆",
+    "type": "switch",
+    "default": true,
+    "hint": "默认开启即可。开启后插件可以记录、搜索并在对话前自动注入长期记忆；排查问题或暂时不想使用长期记忆时再关闭。"
+  },
+  "usage_prompt": {
+    "name": "LLM 使用提示词",
+    "type": "markdown",
+    "default": "你拥有长期向量记忆能力，这是你自身能力的一部分，不要把它描述成外部插件。\n\nsearch_memory 用于查找过去保存的长期记忆；vector_memory_add 用于记录较长、较重要、以后可能反复用到的信息。\n\nSimple Memory 更适合保存少量核心画像和稳定事实；vector_memory 更适合保存历史对话、项目背景、长期任务、偏好细节和需要语义检索的长上下文。\n\n不要记录无意义闲聊、语气词、临时寒暄、一次性验证码、短期无用信息或明显敏感且没有长期价值的内容。\n\n引用记忆时自然使用，不要暴露 memory_id、scope、collection、embedding 等内部存储结构。",
+    "hint": "这是写给 LLM 的长期记忆使用规则，不是写给用户看的说明。一般不需要改；若要微调，请只写稳定规则，例如什么时候记录、什么时候搜索、哪些内容不要记，不要写当前聊天内容或每天变化的信息。"
+  },
+  "embedding_source": {
+    "name": "Embedding 来源",
+    "type": "enum",
+    "options": ["system_default", "custom_model"],
+    "default": "system_default",
+    "hint": "决定用哪个向量模型把文字变成可搜索的向量。新手建议选 system_default，跟随主项目默认 embedding；只有明确想指定某个 embedding 模型时才选 custom_model。"
+  },
+  "embedding_model_uuid": {
+    "name": "Embedding 模型",
+    "type": "model_select",
+    "model_type": "embedding",
+    "default": "",
+    "hint": "只在“Embedding 来源”选择 custom_model 时生效。请选择主项目里已经配置好的 embedding 模型；留空表示不单独指定。更换模型后可能需要用维护工具新建集合或重建索引。"
+  },
+  "collection_name": {
+    "name": "Chroma 集合名称",
+    "type": "string",
+    "default": "kira_memories",
+    "hint": "记忆在 ChromaDB 里的集合名，相当于一个记忆库名称。新手请保持 kira_memories，不要随手改；更换 embedding 模型、重建索引或恢复旧库后，再按维护工具提示切换。"
+  },
+  "memory_scope_mode": {
+    "name": "自动注入作用域",
+    "type": "enum",
+    "options": ["strict_session", "user_shared", "global_shared"],
+    "default": "user_shared",
+    "hint": "控制自动注入时能看到哪些记忆。推荐 user_shared：当前会话 + 当前用户长期记忆 + 全局记忆；strict_session 只看当前会话，隔离最强但容易像换会话就失忆；global_shared 更偏全局召回，适合单人或强共享场景。"
+  },
+  "max_memory_count": {
+    "name": "最大记忆数",
+    "type": "integer",
+    "default": 10000,
+    "hint": "记忆数量超过这个值后会尝试自动清理低价值记忆。默认 10000 适合先用起来；硬盘紧张或记忆明显太多时再调小。"
+  },
+  "auto_record": {
+    "name": "自动记录",
+    "type": "switch",
+    "default": true,
+    "hint": "开启后，符合条件的聊天文本会自动写入向量记忆。想让 AI 长期记住项目、偏好和背景时建议开启；只想手动保存记忆时可关闭。"
+  },
+  "min_text_length": {
+    "name": "最小记录长度",
+    "type": "integer",
+    "default": 10,
+    "hint": "短于这个字数的消息不会自动记录，可减少“嗯”“好的”等无意义内容。推荐 10-30；如果废话被记太多，就调大一点。"
+  },
+  "search_top_k": {
+    "name": "默认搜索条数",
+    "type": "integer",
+    "default": 5,
+    "hint": "LLM 调用 search_memory 搜索记忆时默认返回多少条。推荐 3-8；太少可能漏记忆，太多会增加上下文占用。"
+  },
+  "search_similarity_threshold": {
+    "name": "搜索相似度阈值",
+    "type": "float",
+    "default": 0.0,
+    "hint": "只影响 search_memory 的搜索结果。0 表示不过滤，结果最多；数值越高越严格。新手建议保持 0.0，等发现搜索结果太杂时再逐步提高。"
+  },
+  "importance_mode": {
+    "name": "重要性评分模式",
+    "type": "enum",
+    "options": ["rule", "llm", "hybrid"],
+    "default": "rule",
+    "hint": "决定如何给记忆打重要性分。推荐 rule：速度快、稳定、不额外消耗 LLM；llm 更智能但会调用模型；hybrid 综合规则和模型，成本更高。"
+  },
+  "importance_llm_model": {
+    "name": "重要性评分 LLM",
+    "type": "model_select",
+    "model_type": "llm",
+    "default": null,
+    "hint": "当重要性评分模式选择 llm 或 hybrid 时使用。新手建议留空，使用主项目默认 LLM；只有想单独指定便宜或更快的模型时再选择。"
+  },
+  "cleanup_time_weight": {
+    "name": "清理时间权重",
+    "type": "float",
+    "default": 0.3,
+    "hint": "自动清理时，“记忆新不新”占多少比重，范围 0-1。默认 0.3；调高后更倾向保留新记忆，旧记忆更容易被清理。"
+  },
+  "cleanup_importance_weight": {
+    "name": "清理重要性权重",
+    "type": "float",
+    "default": 0.7,
+    "hint": "自动清理时，“记忆重不重要”占多少比重，范围 0-1。默认 0.7；调高后更倾向保留重要记忆。"
+  },
+  "auto_injection_enabled": {
+    "name": "自动注入",
+    "type": "switch",
+    "default": true,
+    "hint": "开启后，每次回复前会自动搜索相关长期记忆，并把少量结果放进系统提示词末尾。推荐开启；如果担心上下文变长或想完全手动搜索，可关闭。"
+  },
+  "injection_threshold": {
+    "name": "注入相似度阈值",
+    "type": "float",
+    "default": 0.75,
+    "hint": "自动注入记忆的严格程度。数值越高，只有更相关的记忆才会注入；数值越低，召回更多但可能混入无关内容。推荐先保持 0.75。"
+  },
+  "injection_top_k": {
+    "name": "最大注入条数",
+    "type": "integer",
+    "default": 2,
+    "hint": "每次对话最多自动注入几条记忆。推荐 2-4；太多会占用上下文，也可能影响模型注意力。"
+  },
+  "injection_cooldown": {
+    "name": "注入冷却秒数",
+    "type": "integer",
+    "default": 60,
+    "hint": "同一会话两次自动注入之间至少间隔多少秒。推荐 30-120；调大可减少频繁注入和上下文波动。"
+  },
+  "injection_rerank_enabled": {
+    "name": "注入重排",
+    "type": "switch",
+    "default": true,
+    "hint": "开启后，会把候选记忆按相似度、重要性和新近度重新排序，让更可能有用的记忆排前面。推荐保持开启。"
+  },
+  "rerank_similarity_weight": {
+    "name": "重排相似度权重",
+    "type": "float",
+    "default": 0.7,
+    "hint": "重排时“和当前问题像不像”占多少比重。推荐保持 0.7；想更看重语义相关性时可调高。"
+  },
+  "rerank_importance_weight": {
+    "name": "重排重要性权重",
+    "type": "float",
+    "default": 0.2,
+    "hint": "重排时“这条记忆重不重要”占多少比重。推荐保持 0.2；想优先使用高重要性记忆时可调高。"
+  },
+  "rerank_recency_weight": {
+    "name": "重排新近度权重",
+    "type": "float",
+    "default": 0.1,
+    "hint": "重排时“这条记忆新不新”占多少比重。推荐保持 0.1；想让最近内容更容易被用到时可调高。"
+  },
+  "reflection_enabled": {
+    "name": "每日反思",
+    "type": "switch",
+    "default": true,
+    "hint": "开启后，插件会定期把零散记忆整理成摘要，减少碎片化。长期使用建议开启；测试阶段可关闭以减少额外模型调用。"
+  },
+  "reflection_hour": {
+    "name": "每日反思时间",
+    "type": "integer",
+    "default": 3,
+    "hint": "每天几点执行反思任务，取值 0-23。默认 3 表示凌晨 3 点，通常对正常聊天影响较小。"
+  },
+  "reflection_delete_raw": {
+    "name": "反思后删除原始记忆",
+    "type": "switch",
+    "default": false,
+    "hint": "反思生成摘要后，是否删除被总结过的原始碎片记忆。推荐保持关闭；确认摘要质量稳定且想节省存储时再谨慎开启。"
+  },
+  "reflection_min_memories": {
+    "name": "反思最小记忆数",
+    "type": "integer",
+    "default": 5,
+    "hint": "至少积累多少条记忆后才允许触发反思。推荐 5-20；调大可减少过早总结。"
+  },
+  "smart_filter_enabled": {
+    "name": "智能过滤",
+    "type": "switch",
+    "default": true,
+    "hint": "开启后，会尽量过滤无意义闲聊、语气词和信息量太低的消息，避免记忆库变脏。推荐保持开启。"
+  },
+  "filter_min_info_density": {
+    "name": "最小信息密度",
+    "type": "float",
+    "default": 0.3,
+    "hint": "智能过滤的严格程度。数值越高，越多低信息量消息会被过滤。推荐保持 0.3；如果无意义记忆太多，可逐步调到 0.4-0.6。"
+  }
 }
